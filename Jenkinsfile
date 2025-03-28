@@ -4,7 +4,7 @@ pipeline {
     // Define global environment variables
     environment {
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = 'your_sonarqube_token' // Replace with your token
+        SONARQUBE_TOKEN = 'sqa_195c69cd5a4b586bee1a303d97df5f8b52e28b41' // Replace with your token
         TARGET_URL = 'http://your-web-app-url' // Replace with your target web app URL
     }
 

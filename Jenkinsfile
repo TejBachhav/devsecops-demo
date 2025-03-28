@@ -10,9 +10,8 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // For demo purposes, we're simply echoing a message.
-                // In a real scenario, checkout your repo here.
                 echo 'Checking out code...'
+                // In a real scenario, you would check out your repo.
             }
         }
 
@@ -20,7 +19,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running SonarQube analysis...'
-                    // Uncomment and update the following commands if you have a Maven project:
+                    // Uncomment if you have a Maven project:
                     // bat 'mvn sonar:sonar -Dsonar.projectKey=sample-project -Dsonar.host.url=%SONARQUBE_URL% -Dsonar.login=%SONARQUBE_TOKEN%'
                 }
             }
@@ -30,7 +29,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building application and creating Docker image...'
-                    // Uncomment and update for your application:
+                    // Uncomment and update if you have build commands:
                     // bat 'mvn clean package'
                     // bat 'docker build -t sample-app:latest .'
                 }
@@ -41,11 +40,10 @@ pipeline {
             steps {
                 script {
                     echo 'Triggering dynamic security scan with OWASP ZAP...'
-                    // Use bat commands on Windows; environment variables use %VARIABLE_NAME%
+                    // Ensure your OWASP ZAP container is running and mapped to port 8081
                     bat 'curl -X POST "http://localhost:8081/JSON/ascan/action/scan/?url=%TARGET_URL%&recurse=true"'
-                    // Pause for 30 seconds to allow the scan to initiate
-                    bat 'timeout /T 30'
-                    // Retrieve scan alerts from ZAP
+                    // Wait for 30 seconds using ping for delay
+                    bat 'ping -n 31 127.0.0.1 >nul'
                     bat 'curl "http://localhost:8081/JSON/alert/view/alerts/"'
                 }
             }
@@ -55,7 +53,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying Docker container...'
-                    // Uncomment and update if you have a Docker image to run:
+                    // Uncomment and update if you have a Docker run command:
                     // bat 'docker run -d -p 80:80 sample-app:latest'
                 }
             }

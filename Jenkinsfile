@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = 'your_sonarqube_token' // Replace with your token
-        TARGET_URL = 'http://your-web-app-url' // Replace with your target web app URL
+        SONARQUBE_TOKEN = 'sqa_314c05b42c628e90fd6cd6566dc74397e0e8ae44' // Replace with your token
+        TARGET_URL = 'https://your-tube2.netlify.app/' // Replace with your target web app URL
     }
 
     stages {

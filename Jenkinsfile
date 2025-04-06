@@ -4,7 +4,7 @@ pipeline {
     // Define global environment variables
     environment {
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = 'your_sonarqube_token' // Replace with your token
+        SONARQUBE_TOKEN = 'sqa_195c69cd5a4b586bee1a303d97df5f8b52e28b41' // Replace with your token
         TARGET_URL = 'http://your-web-app-url' // Replace with your target web app URL
     }
 
@@ -37,8 +37,8 @@ pipeline {
                 script {
                     echo 'Building application and creating Docker image...'
                     // Uncomment and update the commands for your application:
-                    // sh 'mvn clean package'
-                    // sh 'docker build -t sample-app:latest .'
+                    sh 'mvn clean package'
+                    sh 'docker build -t sample-app:latest .'
                 }
             }
         }
@@ -49,11 +49,11 @@ pipeline {
                     echo 'Triggering dynamic security scan with OWASP ZAP...'
                     // Replace http://localhost:8081 with your ZAP host/port if different:
                     sh """
-                        curl -X POST "http://localhost:8081/JSON/ascan/action/scan/?url=${TARGET_URL}&recurse=true"
+                        curl -X POST "http://localhost:8082/JSON/ascan/action/scan/?url=${TARGET_URL}&recurse=true"
                     """
                     sleep(time: 30, unit: 'SECONDS')
                     sh """
-                        curl "http://localhost:8081/JSON/alert/view/alerts/"
+                        curl "http://localhost:8082/JSON/alert/view/alerts/"
                     """
                 }
             }

@@ -79,21 +79,22 @@ pipeline {
 
     environment {
         SONARQUBE_URL = 'http://localhost:9000'
-        TARGET_URL = 'https://your-tube2.netlify.app/' // Replace with your deployed app's URL
+        SONARQUBE_TOKEN = 'sqa_314c05b42c628e90fd6cd6566dc74397e0e8ae44' // Store in Jenkins credentials for better security
+        TARGET_URL = 'https://your-tube2.netlify.app/' // Replace with your deployed app URL
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                echo '🔄 Checking out code from Git...'
+                echo '🔄 Checking out code...'
                 checkout scm
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo '📦 Installing project dependencies...'
-                sh 'npm install'
+                echo '📦 Installing project dependencies (Windows)...'
+                bat 'npm install'
             }
         }
 
@@ -101,12 +102,12 @@ pipeline {
             steps {
                 echo '🔍 Running SonarQube analysis...'
                 withSonarQubeEnv('SonarQube') {
-                    sh """
-                        sonar-scanner \
-                          -Dsonar.projectKey=your-tube-app \
-                          -Dsonar.sources=. \
-                          -Dsonar.host.url=$SONARQUBE_URL \
-                          -Dsonar.login=${sqa_314c05b42c628e90fd6cd6566dc74397e0e8ae44}
+                    bat """
+                        sonar-scanner ^
+                        -Dsonar.projectKey=your-tube-app ^
+                        -Dsonar.sources=. ^
+                        -Dsonar.host.url=%SONARQUBE_URL% ^
+                        -Dsonar.login=%SONARQUBE_TOKEN%
                     """
                 }
             }
@@ -115,45 +116,43 @@ pipeline {
         stage('Build Application') {
             steps {
                 echo '🏗️ Building the application...'
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo '🐳 Building Docker image...'
-                sh 'docker build -t your-tube-app:latest .'
+                bat 'docker build -t your-tube-app:latest .'
             }
         }
 
         stage('Dynamic Security Testing (OWASP ZAP)') {
             steps {
-                echo '🛡️ Running dynamic security testing with OWASP ZAP...'
-                sh """
-                    curl -X POST "http://localhost:8081/JSON/ascan/action/scan/?url=${TARGET_URL}&recurse=true"
+                echo '🛡️ Running OWASP ZAP dynamic scan...'
+                bat """
+                    curl -X POST "http://localhost:8081/JSON/ascan/action/scan/?url=%TARGET_URL%&recurse=true"
                 """
-                echo '⌛ Waiting for scan results...'
+                echo '⌛ Waiting for scan to process...'
                 sleep(time: 30, unit: 'SECONDS')
-                sh """
-                    curl "http://localhost:8081/JSON/alert/view/alerts/"
-                """
+                bat 'curl "http://localhost:8081/JSON/alert/view/alerts/"'
             }
         }
 
         stage('Deploy to Production') {
             steps {
                 echo '🚀 Deploying Docker container...'
-                sh 'docker run -d -p 80:80 your-tube-app:latest'
+                bat 'docker run -d -p 80:80 your-tube-app:latest'
             }
         }
     }
 
     post {
         always {
-            echo "✅ Pipeline execution finished."
+            echo "✅ Pipeline execution completed."
         }
         failure {
-            echo "❌ Pipeline failed. Please check the logs for details."
+            echo "❌ Pipeline failed. Please check logs."
         }
     }
 }

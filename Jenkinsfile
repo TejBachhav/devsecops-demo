@@ -132,11 +132,11 @@ pipeline {
                 script {
                     echo '🛡️ Running OWASP ZAP scan...'
                     bat """
-                        curl -X POST "http://localhost:8081/JSON/ascan/action/scan/?url=%TARGET_URL%&recurse=true"
+                        curl -X POST "http://localhost:8092/JSON/ascan/action/scan/?url=%TARGET_URL%&recurse=true"
                     """
                     sleep(time: 30, unit: 'SECONDS')
                     bat """
-                        curl "http://localhost:8081/JSON/alert/view/alerts/"
+                        curl "http://localhost:8092/JSON/alert/view/alerts/"
                     """
                 }
             }
